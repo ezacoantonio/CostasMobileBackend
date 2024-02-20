@@ -15,6 +15,12 @@ const customerTireRoutes = require("./routes/customerTireRoutes");
 // Middleware for JSON body parsing
 app.use(express.json());
 
+// To allow requests from your web application's origin
+const corsOptions = {
+  origin: "https://cmf-wud5.onrender.com",
+  optionsSuccessStatus: 200, // For legacy browser support
+};
+
 app.use(
   cors({
     origin: "http://localhost:3001", // Your frontend URL
@@ -28,6 +34,7 @@ require("dotenv").config();
 connectDB();
 
 // Routes
+app.use(cors(corsOptions));
 app.use("/api/auth", authRoutes);
 app.use("/api", componentRoutes);
 app.use("/api", frontendComponentRoutes);
