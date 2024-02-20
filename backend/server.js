@@ -12,29 +12,39 @@ const projectRoutes = require("./routes/ProjectManegement/projectRoutes");
 const dashboardRoutes = require("./routes/Dashboard/dashboardRoutes");
 const clientMessageRoutes = require("./routes/Customer/clientMessageRoutes");
 const customerTireRoutes = require("./routes/customerTireRoutes");
+
+const allowedOrigins = [
+  "http://localhost:3001",
+  "https://cmf-wud5.onrender.com",
+];
+
 // Middleware for JSON body parsing
 app.use(express.json());
 
-// To allow requests from your web application's origin
-const corsOptions = {
-  origin: "https://cmf-wud5.onrender.com",
-  optionsSuccessStatus: 200, // For legacy browser support
-};
-
+// Dynamic CORS Configuration
 app.use(
   cors({
-    origin: "http://localhost:3001", // Your frontend URL
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.indexOf(origin) === -1) {
+        var msg =
+          "The CORS policy for this site does not allow access from the specified Origin.";
+        return callback(new Error(msg), false);
+      }
+      return callback(null, true);
+    },
+    optionsSuccessStatus: 200, // For legacy browser support
   })
 );
 
-//dotenv config
+// dotenv config
 require("dotenv").config();
 
 // Connect to MongoDB
 connectDB();
 
 // Routes
-app.use(cors(corsOptions));
 app.use("/api/auth", authRoutes);
 app.use("/api", componentRoutes);
 app.use("/api", frontendComponentRoutes);
